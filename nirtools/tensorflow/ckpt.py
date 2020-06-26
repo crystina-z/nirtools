@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tennsorflow.train import list_variables, load_variable
 from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
 
 
@@ -38,3 +39,15 @@ def rename_variables(tvars, patterns, prefix="", save=False, outp_fn="converted.
             sess.run(tf.global_variables_initializer())
             saver.save(sess, outp_fn)
     return renamed_tvars
+
+
+def convert_tvars_to_dict(tvars, name2nparr=None):
+    if not name2nparr:
+        name2nparr = {}
+
+    name2nparr.update({var.name: var.numpy() for var in tvars})
+    return name2nparr
+
+
+def convert_ckpt_file_to_dict(path):
+    return {name: load_variable(ckpt_dir_or_file=path, name=name) for name, shape in list_variables(path)}
