@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tennsorflow.train import list_variables, load_variable
+from tensorflow.train import list_variables, load_variable
 from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
 
 
