@@ -1,4 +1,24 @@
+import os
 import re
+
+
+def get_lang_reserved_words(lang):
+    """
+    Load the reserved words of the specified language
+
+    :param lang: str, the name of the language
+    :return: list, all the reserved keywords
+    """
+    root_path = "../resources"
+    supported_lang = [fn.replace(".txt", "") for fn in os.listdir(root_path)]
+    if lang not in supported_lang:
+        raise ValueError("Reserved words for language {lang} is not available. Please choose from %s" %
+                         ",".join(supported_lang))
+
+    with open(os.path.join(root_path, f"{lang}.txt")) as f:
+        reserved_words = [word.strip() for word in f]
+
+    return reserved_words
 
 
 def code_tokenize(sent, return_str=True):
