@@ -16,7 +16,7 @@ def load_qrels(fn):
     return qrels
 
 
-def load_runfile(fn):
+def load_runs(fn):
     """
     Loading trec format runfile into a dictionary
 
@@ -31,9 +31,9 @@ def load_runfile(fn):
     return runs
 
 
-def load_topic(topic_fn, field="title"):
+def load_topic_trec(topic_fn, field="title"):
     """
-    Return a iterator yielding query id and specified field from trec-format topic file
+    Yield query id and specified field from trec-format topic file
 
     :param topic_fn: the path to the trec-topic file
     :return: a iterator yielding (qid, field content)
@@ -55,7 +55,21 @@ def load_topic(topic_fn, field="title"):
             qid = ""
 
 
-def load_collection(coll_fn):
+def load_topic_tsv(topic_fn, delimiter="\t"):
+    """
+    Yield query id and specified field from a id\tcontent format topic file
+
+    :param topic_fn: the path to the trec-topic file
+    :param delimiter: str, the delimiter betwen id and content
+    :return: a iterator yielding (qid, field content)
+    """
+    with open(topic_fn) as f:
+        for line in f:
+            qid, content = line.strip().split(delimiter)
+            yield qid, content
+
+
+def load_collection_trec(coll_fn):
     """
     Return a iterator yielding doc id and contnet from trec-format collection file
 
@@ -85,3 +99,18 @@ def load_collection(coll_fn):
                 assert docid != ""
                 yield docid, doc.strip()
                 docid = ""
+
+
+def load_collection_tsv(coll_fn, delimiter="\t"):
+    """
+    Yield document id and specified field from a id\tcontent format collection file
+
+    :param topic_fn: the path to the trec-topic file
+    :param delimiter: str, the delimiter betwen id and content
+    :return: a iterator yielding (qid, field content)
+    """
+    with open(coll_fn) as f:
+        for line in f:
+            docid, content = line.strip().split(delimiter)
+            yield docid, content
+
