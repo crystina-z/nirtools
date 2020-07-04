@@ -9,7 +9,8 @@ def get_lang_reserved_words(lang):
     :param lang: str, the name of the language
     :return: list, all the reserved keywords
     """
-    root_path = "../resources"
+    join, dirname, abspath = os.path.join, os.path.dirname, os.path.abspath
+    root_path = join(dirname(abspath(__file__)), "resources") # root_path = "../resources"
     supported_lang = [fn.replace(".txt", "") for fn in os.listdir(root_path)]
     if lang not in supported_lang:
         raise ValueError("Reserved words for language {lang} is not available. Please choose from %s" %
