@@ -14,7 +14,7 @@ def test_get_lang_reserved_words():
 def test_code_tokenize():
     code = "func ( t * SecondaryTree ) SeekFirst ( ) ( e * SecondaryEnumerator , err error ) { q := t . first if q == nil { return nil , io . EOF } return btEPool2 . get ( nil , true , 0 , q . d [ 0 ] . k , q , t , atomic . LoadUint64 ( & t . ver ) ) , nil }"
     expected = "func ( t * secondary tree ) seek first ( ) ( e * secondary enumerator , err error ) { q := t . " \
-               "first if q == nil { return nil , io . eOF} return bt e pool2 . get ( nil , true , 0 , q . d [ 0 ] . " \
+               "first if q == nil { return nil , io . eof } return bt e pool2 . get ( nil , true , 0 , q . d [ 0 ] . " \
                "k , q , t , atomic . load uint64 ( & t . ver ) ) , nil }"
     assert preprocess.code_tokenize(code) == expected
 
@@ -22,13 +22,13 @@ def test_code_tokenize():
 def test_remove_non_alphabet():
     code = "func ( t * SecondaryTree ) SeekFirst ( ) ( e * SecondaryEnumerator , err error ) { q := t . first if q == nil { return nil , io . EOF } return btEPool2 . get ( nil , true , 0 , q . d [ 0 ] . k , q , t , atomic . LoadUint64 ( & t . ver ) ) , nil }"
     expected = "func t SecondaryTree SeekFirst e SecondaryEnumerator err error q t first if q nil return nil io EOF " \
-               "return btEPool2 get nil true 0 q d 0 k q t atomic LoadUint64 t ver nil"
+               "return btEPool get nil true q d k q t atomic LoadUint t ver nil"
     assert preprocess.remove_non_alphabet(code) == expected
 
 
 def test_remove_unicharacter():
     code = "func ( t * SecondaryTree ) SeekFirst ( ) ( e * SecondaryEnumerator , err error ) { q := t . first if q == nil { return nil , io . EOF } return btEPool2 . get ( nil , true , 0 , q . d [ 0 ] . k , q , t , atomic . LoadUint64 ( & t . ver ) ) , nil }"
-    expected = "func SecondaryTree SeekFirst SecondaryEnumerator err error q := t first if q == nil return nil io " \
+    expected = "func SecondaryTree SeekFirst SecondaryEnumerator err error := first if == nil return nil io " \
                "EOF return btEPool2 get nil true atomic LoadUint64 ver nil"
     assert preprocess.remove_unicharacter(code) == expected
 
