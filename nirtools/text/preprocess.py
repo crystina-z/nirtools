@@ -10,7 +10,8 @@ def get_lang_reserved_words(lang):
     :return: list, all the reserved keywords
     """
     join, dirname, abspath = os.path.join, os.path.dirname, os.path.abspath
-    root_path = join(dirname(abspath(__file__)), "resources") # root_path = "../resources"
+    nirpath = dirname(dirname(abspath(__file__)))
+    root_path = join(nirpath, "resources")  # root_path = "../resources"
     supported_lang = [fn.replace(".txt", "") for fn in os.listdir(root_path)]
     if lang not in supported_lang:
         raise ValueError("Reserved words for language {lang} is not available. Please choose from %s" %
@@ -22,7 +23,7 @@ def get_lang_reserved_words(lang):
     return reserved_words
 
 
-def code_tokenize(sent, return_str=True):
+def code_tokenize(sent, return_str=True, lowercase=True):
     """
     Tokenize according to camelCase and snake_case
 
@@ -36,7 +37,10 @@ def code_tokenize(sent, return_str=True):
         sent = pattern.sub(r"\1 \2", sent)
 
     # tokenize according to snake
-    sent = sent.replace("_", " ").split()
+    sent = sent.replace("_", " ")
+    if lowercase:
+        sent = sent.lower()
+    sent = sent.split()  # remove consecutive whitespace
 
     if return_str:
         sent = " ".join(sent)
@@ -52,7 +56,7 @@ def remove_non_alphabet(sent, return_str=True):
     :param return_str: bool, return str when set to True, otherwise return tokenized list. default True
     :return: str, the sentense after non-alphabetics are removed
     """
-    sent = re.sub("^[A-Za-z ]", " ", sent)
+    sent = re.sub("[^A-Za-z ]", " ", sent)
     sent = sent.split()  # remove consecutive whitespace
 
     if return_str:
