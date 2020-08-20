@@ -60,28 +60,66 @@ def write_runs(run_dict, outp_fn, label="test"):
                 # e.g. 1 Q0 DOC_1 1 -0.1 test
 
 
-def load_topic_trec(topic_fn, field="title"):
+def _read_until_close_tag(f, close_tags):
+    def _is_end(line):
+        for close_tag in close_tags:
+            if line.startswith(close_tag):
+                return True
+        return False
+
+    content = ""
+    while True:
+        line = f.readline()
+        if _is_end(line) or line == "":
+            content = content.split()
+            return content, line
+
+        content += line.strip()
+
+
+def load_topic_trec(topic_fn, fields=["title"]):
     """
     Yield query id and specified field from trec-format topic file
 
     :param topic_fn: the path to the trec-topic file
     :return: a iterator yielding (qid, field content)
     """
-    qid = ""
+    qid, topic = "-1", {}
+    fields = sorted(fields, key=lambda name: {"title": 0, "desc": 1, "narr": 2}[name])
+
     with open(topic_fn, "rt", encoding="utf-8") as f:
-        for line in f:
+        while True:
+            line = f.readline()
+            if line == "":
+                break
+
             line = line.strip()
-
             if line.startswith("<num>"):
+                if qid != "-1":
+                    yield qid, topic
                 qid = line.replace("<num>", "").replace("Number: ", "").strip()
-
-            if not line.startswith(f"<{field}>"):
+                topic = {}
                 continue
 
-            assert qid != ""
-            topic = line.replace(f"<{field}>", "").strip()
-            yield qid, topic.split()
-            qid = ""
+            for field in fields:
+                if not line.startswith(f"<{field}>"):
+                    continue
+
+                if field == "title":
+                    curline = line.replace(f"<title>", "").strip().split()
+                    topic["title"], line = _read_until_close_tag(f, ["\n", "<desc>"])
+                    topic["title"] = curline + topic["title"]
+
+                if field == "desc" or ("desc" in fields and line.startswith("<desc>")):
+                    curline = line.replace(f"<desc>", "").replace("Description:", "").strip().split()
+                    topic["desc"], line = _read_until_close_tag(f, ["\n", "<narr>"])
+                    topic["desc"] = curline + topic["desc"]
+
+                if field == "narr" or ("narr" in fields and line.startswith("<narr>")):
+                    curline = line.replace(f"<narr>", "").replace("Narrative:", "").strip().split()
+                    topic["narr"], line = _read_until_close_tag(f, ["\n", "</top>"])
+                    topic["narr"] = curline + topic["narr"]
+        yield qid, topic
 
 
 def load_topic_tsv(topic_fn, delimiter="\t"):
