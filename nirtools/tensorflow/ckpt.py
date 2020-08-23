@@ -17,7 +17,7 @@ def inspect(ckpt_path, tensor_name=""):
     )
 
 
-def inspect_huggingface_model(HFClass, bert_model="bert-base-uncased"):
+def inspect_huggingface_model(HFClass, bert_model="bert-base-uncased", return_value=False):
     """
     fetch all trainable tensors from the given huggingface tensorflow model
 
@@ -26,7 +26,8 @@ def inspect_huggingface_model(HFClass, bert_model="bert-base-uncased"):
     :return: all trainable variables
     """
     model = HFClass.from_pretrained(bert_model)
-    return model.trainable_weight
+    weights = model.trainable_weights
+    return [(v.name, v.shape) for v in weights]
 
 
 def rename_variables(tvars, patterns, prefix="", save=False, outp_fn="converted.ckpt"):
