@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
     setuptools.setup(
         name="nirtools", # Replace with your own username
-        version="0.0.1",
+        version="0.0.2",
         author="Crystina",
         author_email="xzhangbx@gmail.com",
         description="Some small tool functions for nir",
