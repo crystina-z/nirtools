@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
         description="Some small tool functions for nir",
         long_description=long_description,
         long_description_content_type="text/markdown",
-        url="https://github.com/crystina-z/nirtools.git",
+        url="https://github.com/crystina-z/nirtools",
         packages=setuptools.find_packages(),
         classifiers=[
             "Programming Language :: Python :: 3",
