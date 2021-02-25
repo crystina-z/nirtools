@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.train import list_variables, load_variable
+from tensorflow.train import list_variables, load_checkpoint
 from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
 
 
@@ -78,11 +78,14 @@ def convert_tvars_to_dict(tvars, name2nparr=None):
     return name2nparr
 
 
-def convert_ckpt_file_to_dict(path):
+def load_checkpoint_as_dict(path, keyword=""):
     """
     load the tensorflow dictionary from checkpoint file and convert it to a dictionary mapping name to value
-
     :param path: the checkpoint file path
     :return: the dictionary in the format of {dict: np.Array}
     """
-    return {name: load_variable(ckpt_dir_or_file=path, name=name) for name, shape in list_variables(path)}
+    reader = load_checkpoint(ckpt_dir_or_file=path)
+    return {
+        name: reader.get_tensor(name)
+        for name, shape in list_variables(path) if keyword.lower() in name.lower()
+    }
