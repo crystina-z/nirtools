@@ -11,3 +11,11 @@ def merge_dict(a, b):
         else:
             b[k] = v
     return b
+
+
+def get_recursive_keys(dct):
+    keys = list(dct.keys())
+    for k in dct:
+        if isinstance(dct[k], dict):
+            keys.extend(get_recursive_keys(dct[k]))
+    return keys
