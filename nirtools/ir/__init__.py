@@ -1,4 +1,5 @@
 import os
+import gzip
 from collections import defaultdict, OrderedDict
 
 
@@ -144,28 +145,39 @@ def load_collection_trec(coll_fn):
     :return: a iterator yielding (docid, document content)
     """
     docid = ""
-    with open(coll_fn, "rt", encoding="utf-8") as f:
+    f = gzip.open(coll_fn) if coll_fn.endswith(".gz") else open(coll_fn, "rb") 
+    def read_nextline():
         while True:
-            line = f.readline().strip()
+            try:
+                line = f.readline()
+                line = line.decode().strip()
+                break
+            except:
+                print(f"invalid line:\t {line}")
+        return line 
+
+
+    while True:
+        line = read_nextline()
+        if line == "":
+            line = read_nextline()
             if line == "":
-                line = f.readline().strip()
-                if line == "":
+                break
+
+        if line.startswith("<DOCNO>"):
+            docid = line.replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
+
+        if line == "<TEXT>":
+            doc = read_nextline()
+            while True:
+                line = read_nextline()
+                if line == "</TEXT>":
                     break
+                doc += line
 
-            if line.startswith("<DOCNO>"):
-                docid = line.replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
-
-            if line == "<TEXT>":
-                doc = f.readline().strip()
-                while True:
-                    line = f.readline().strip()
-                    if line == "</TEXT>":
-                        break
-                    doc += line
-
-                assert docid != ""
-                yield docid, doc.strip()
-                docid = ""
+            assert docid != ""
+            yield docid, doc.strip()
+            docid = ""
 
 
 def load_collection_tsv(coll_fn, delimiter="\t"):
