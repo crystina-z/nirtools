@@ -1,4 +1,5 @@
 #taken from this StackOverflow answer: https://stackoverflow.com/a/39225039
+import sys
 import requests
 
 
@@ -32,3 +33,9 @@ def save_response_content(response, destination):
         for chunk in response.iter_content(CHUNK_SIZE):
             if chunk:  # filter out keep-alive new chunks
                 f.write(chunk)
+
+
+if __name__ == "__main__":
+    id = sys.argv[1]
+    desc = sys.argv[2]
+    download_file_from_google_drive(id, desc)
