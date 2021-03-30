@@ -1,35 +1,9 @@
-from collections import OrderedDict
+""" A comparison between each significant test can be found here: https://ciir-publications.cs.umass.edu/getpdf.php?id=744#:~:text=Information%20retrieval%20(IR)%20researchers%20commonly,test%2C%20and%20the%20sign%20test.&text=Both%20the%20Wilcoxon%20and%20sign,to%20false%20detections%20of%20significance. """
 from argparse import ArgumentParser
 
 import pytrec_eval
 from scipy import stats
 from . import load_qrels, load_runs
-
-
-def query_wise_compare(
-    run1, run2, qrels, mark=False, output_fn="query_wise_compare.txt", metrics="map"
-):
-    evaluator = pytrec_eval.RelevanceEvaluator(qrels, {metrics})
-    id2score_1 = evaluator.evaluate(run1)
-    id2score_2 = evaluator.evaluate(run2)
-
-    with open(output_fn, "w") as f:
-        for qid in set(id2score_1) | set(id2score_2):
-            s1 = id2score_1.get(qid, {metrics: "--"})[metrics]
-            s2 = id2score_2.get(qid, {metrics: "--"})[metrics]
-            if not mark or s1 == "--" or s2 == "--":
-                line = f"{qid}\t{s1}\t{s2}"
-            else:
-                line = line + "\t<" if s1 <= s2 else "\t>"
-            f.write(line + "\n")
-
-
-def query_wise_compare_runfiles(
-    runfile1, runfile2, qrelfile, output_fn="query_wise_compare.txt", metrics="map"
-):
-    run1, run2 = load_runs(runfile1), load_runs(runfile2)
-    qrels = load_qrels(qrelfile)
-    query_wise_compare(run1, run2, qrels, output_fn, metrics)
 
 
 def _calc_scores(runs, qrels=None, evaluator=None, metric="map", return_qid=False):
