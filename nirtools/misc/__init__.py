@@ -19,4 +19,3 @@ def get_recursive_keys(dct):
         if isinstance(dct[k], dict):
             keys.extend(get_recursive_keys(dct[k]))
     return keys
-

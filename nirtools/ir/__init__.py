@@ -5,7 +5,9 @@ from collections import defaultdict, OrderedDict
 
 def sort_qid_docid_value_dict(d):
     sorted_d = OrderedDict()
-    qids = sorted(d.keys(), key=lambda k: int(k))  # sort according to qid int value rather than string value
+    qids = sorted(
+        d.keys(), key=lambda k: int(k)
+    )  # sort according to qid int value rather than string value
     for qid in qids:  # sort according to label/score, from large to small
         docs = sorted(d[qid].items(), key=lambda kv: kv[1], reverse=True)
         sorted_d[qid] = {k: v for k, v in docs}
@@ -112,12 +114,22 @@ def load_topic_trec(topic_fn, fields=["title"]):
                     topic["title"] = curline + topic["title"]
 
                 if field == "desc" or ("desc" in fields and line.startswith("<desc>")):
-                    curline = line.replace(f"<desc>", "").replace("Description:", "").strip().split()
+                    curline = (
+                        line.replace(f"<desc>", "")
+                        .replace("Description:", "")
+                        .strip()
+                        .split()
+                    )
                     topic["desc"], line = _read_until_close_tag(f, ["\n", "<narr>"])
                     topic["desc"] = curline + topic["desc"]
 
                 if field == "narr" or ("narr" in fields and line.startswith("<narr>")):
-                    curline = line.replace(f"<narr>", "").replace("Narrative:", "").strip().split()
+                    curline = (
+                        line.replace(f"<narr>", "")
+                        .replace("Narrative:", "")
+                        .strip()
+                        .split()
+                    )
                     topic["narr"], line = _read_until_close_tag(f, ["\n", "</top>"])
                     topic["narr"] = curline + topic["narr"]
         yield qid, topic
@@ -145,7 +157,8 @@ def load_collection_trec(coll_fn):
     :return: a iterator yielding (docid, document content)
     """
     docid = ""
-    f = gzip.open(coll_fn) if coll_fn.endswith(".gz") else open(coll_fn, "rb") 
+    f = gzip.open(coll_fn) if coll_fn.endswith(".gz") else open(coll_fn, "rb")
+
     def read_nextline():
         while True:
             try:
@@ -154,8 +167,7 @@ def load_collection_trec(coll_fn):
                 break
             except:
                 print(f"invalid line:\t {line}")
-        return line 
-
+        return line
 
     while True:
         line = read_nextline()
@@ -192,4 +204,3 @@ def load_collection_tsv(coll_fn, delimiter="\t"):
         for line in f:
             docid, content = line.strip().split(delimiter)
             yield docid, content
-

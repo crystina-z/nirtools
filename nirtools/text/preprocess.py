@@ -14,8 +14,10 @@ def get_lang_reserved_words(lang):
     root_path = join(nirpath, "resources")  # root_path = "../resources"
     supported_lang = [fn.replace(".txt", "") for fn in os.listdir(root_path)]
     if lang not in supported_lang:
-        raise ValueError("Reserved words for language {lang} is not available. Please choose from %s" %
-                         ",".join(supported_lang))
+        raise ValueError(
+            "Reserved words for language {lang} is not available. Please choose from %s"
+            % ",".join(supported_lang)
+        )
 
     with open(os.path.join(root_path, f"{lang}.txt")) as f:
         reserved_words = [word.strip() for word in f]

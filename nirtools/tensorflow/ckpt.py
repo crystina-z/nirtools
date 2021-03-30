@@ -17,7 +17,9 @@ def inspect(ckpt_path, tensor_name=""):
     )
 
 
-def inspect_huggingface_model(HFClass, bert_model="bert-base-uncased", return_value=False):
+def inspect_huggingface_model(
+    HFClass, bert_model="bert-base-uncased", return_value=False
+):
     """
     fetch all trainable tensors from the given huggingface tensorflow model
 
@@ -45,6 +47,7 @@ def rename_variables(tvars, patterns, prefix="", save=False, outp_fn="converted.
         default "converted.ckpt"
     :return: a list of renamed variables
     """
+
     def convert(name):
         for ori, tgt in patterns.items():
             name = name.replace(ori, tgt)
@@ -87,5 +90,6 @@ def load_checkpoint_as_dict(path, keyword=""):
     reader = load_checkpoint(ckpt_dir_or_file=path)
     return {
         name: reader.get_tensor(name)
-        for name, shape in list_variables(path) if keyword.lower() in name.lower()
+        for name, shape in list_variables(path)
+        if keyword.lower() in name.lower()
     }
