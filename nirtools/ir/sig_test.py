@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 
 import pytrec_eval
 from scipy import stats
-from . import load_qrels, load_runs
+from nirtools.ir import load_qrels, load_runs
 
 
 def _calc_scores(runs, qrels=None, evaluator=None, metric="map", return_qid=False):
@@ -13,7 +13,7 @@ def _calc_scores(runs, qrels=None, evaluator=None, metric="map", return_qid=Fals
     if not evaluator:
         evaluator = pytrec_eval.RelevanceEvaluator(qrels, {metric})
     scores = evaluator.evaluate(runs)
-    scores = sorted(scores.items, key=lambda kv: kv[0])
+    scores = sorted(scores.items(), key=lambda kv: kv[0])
 
     score_values = [v[metric] for k, v in scores]
     if not return_qid:
