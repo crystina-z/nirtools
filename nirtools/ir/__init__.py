@@ -5,9 +5,13 @@ from collections import defaultdict, OrderedDict
 
 def sort_qid_docid_value_dict(d):
     sorted_d = OrderedDict()
-    qids = sorted(
-        d.keys(), key=lambda k: int(k)
-    )  # sort according to qid int value rather than string value
+    try:
+        qids = sorted(
+            d.keys(), key=lambda k: int(k)
+        )  # sort according to qid int value rather than string value
+    except:
+        qids = sorted(d.keys())
+
     for qid in qids:  # sort according to label/score, from large to small
         docs = sorted(d[qid].items(), key=lambda kv: kv[1], reverse=True)
         sorted_d[qid] = {k: v for k, v in docs}
