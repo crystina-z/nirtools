@@ -104,7 +104,12 @@ def load_topic_trec(topic_fn, fields=["title"]):
             if line.startswith("<num>"):
                 if qid != "-1":
                     yield qid, topic
-                qid = line.replace("<num>", "").replace("</num>", "").replace("Number: ", "").strip()
+                qid = (
+                    line.replace("<num>", "")
+                    .replace("</num>", "")
+                    .replace("Number: ", "")
+                    .strip()
+                )
                 topic = {}
                 continue
 
@@ -113,7 +118,12 @@ def load_topic_trec(topic_fn, fields=["title"]):
                     continue
 
                 if field == "title":
-                    curline = line.replace(f"<title>", "").replace(f"</title>", "").strip().split()
+                    curline = (
+                        line.replace(f"<title>", "")
+                        .replace(f"</title>", "")
+                        .strip()
+                        .split()
+                    )
                     topic["title"], line = _read_until_close_tag(f, ["\n", "<desc>"])
                     topic["title"] = curline + topic["title"]
 
@@ -184,7 +194,6 @@ def load_collection_trec(coll_fn):
 
         if line.startswith("<DOCNO>"):
             docid = line.replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
-
 
         if line == "<TEXT>":
             doc = read_nextline()
