@@ -33,7 +33,7 @@ def load_qrels(fn):
     return qrels
 
 
-def load_runs(fn):
+def load_runs(fn, topk=None):
     """
     Loading trec format runfile into a dictionary
 
@@ -45,6 +45,15 @@ def load_runs(fn):
         for line in f:
             qid, _, docid, _, score, _ = line.strip().split()
             runs[qid][docid] = float(score)
+
+    if topk is not None:
+        if not isinstance(topk, int) and topk > 0:
+            raise TypeError(f'Unexpected type of topk: expected positive int, but got {topk}')
+
+        for qid in runs:
+            docid2scores = sorted(runs[qid].items(), key=lambda kv: kv[1], reverse=True)[:topk]
+            runs[qid] = {docid: score for docid, score in docid2scores}
+
     return runs
 
 
