@@ -33,6 +33,30 @@ def load_qrels(fn):
     return qrels
 
 
+def load_runs_tsv(fn, topk=None):
+    """
+    Loading tsv format runfile into a dictionary
+
+    :param fn: runfile path
+    :return: dict, in format {qid: {docid: score, ...}, ...}
+    """
+    runs = defaultdict(dict)
+    with open(fn, "r", encoding="utf-8") as f:
+        for line in f:
+            qid, docid, rank = line.strip().split()
+            runs[qid][docid] = -int(rank)
+
+    if topk is not None:
+        if not isinstance(topk, int) and topk > 0:
+            raise TypeError(f'Unexpected type of topk: expected positive int, but got {topk}')
+
+        for qid in runs:
+            docid2scores = sorted(runs[qid].items(), key=lambda kv: kv[1], reverse=True)[:topk]
+            runs[qid] = {docid: score for docid, score in docid2scores}
+
+    return runs
+
+
 def load_runs(fn, topk=None):
     """
     Loading trec format runfile into a dictionary
@@ -58,7 +82,10 @@ def load_runs(fn, topk=None):
 
 
 def write_qrels(qrels_dict, outp_fn):
-    os.makedirs(os.path.dirname(outp_fn), exist_ok=True)
+    outp_dir = os.path.dirname(outp_fn).strip("").rstrip("/")
+    if outp_dir:
+        os.makedirs(outp_dir, exist_ok=True)
+
     sorted_qrels = sort_qid_docid_value_dict(qrels_dict)
     with open(outp_fn, "w", encoding="utf-8") as f:
         for qid in sorted_qrels:
@@ -67,7 +94,10 @@ def write_qrels(qrels_dict, outp_fn):
 
 
 def write_runs(run_dict, outp_fn, label="test"):
-    os.makedirs(os.path.dirname(outp_fn), exist_ok=True)
+    outp_dir = os.path.dirname(outp_fn).strip("").rstrip("/")
+    if outp_dir:
+        os.makedirs(outp_dir, exist_ok=True)
+
     sorted_run_dict = sort_qid_docid_value_dict(run_dict)
     with open(outp_fn, "w", encoding="utf-8") as f:
         for qid in sorted_run_dict:
