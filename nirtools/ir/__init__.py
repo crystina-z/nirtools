@@ -56,19 +56,11 @@ def load_runs_tsv(fn, topk=None):
 
     return runs
 
-
-def load_runs(fn, topk=None):
-    """
-    Loading trec format runfile into a dictionary
-
-    :param fn: runfile path
-    :return: dict, in format {qid: {docid: score, ...}, ...}
-    """
+def load_runs_from_file_contents(file_contents, topk=None):
     runs = defaultdict(dict)
-    with open(fn, "r", encoding="utf-8") as f:
-        for line in f:
-            qid, _, docid, _, score, _ = line.strip().split()
-            runs[qid][docid] = float(score)
+    for line in file_contents:
+        qid, _, docid, _, score, _ = line.strip().split()
+        runs[qid][docid] = float(score)
 
     if topk is not None:
         if not isinstance(topk, int) and topk > 0:
@@ -78,6 +70,18 @@ def load_runs(fn, topk=None):
             docid2scores = sorted(runs[qid].items(), key=lambda kv: kv[1], reverse=True)[:topk]
             runs[qid] = {docid: score for docid, score in docid2scores}
 
+    return runs
+
+
+def load_runs(fn, topk=None):
+    """
+    Loading trec format runfile into a dictionary
+
+    :param fn: runfile path
+    :return: dict, in format {qid: {docid: score, ...}, ...}
+    """
+    with open(fn, "r", encoding="utf-8") as f:
+        runs = load_runs(file_contents=f, topk=topk)
     return runs
 
 
