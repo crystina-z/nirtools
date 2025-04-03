@@ -81,7 +81,7 @@ def load_runs(fn, topk=None):
     :return: dict, in format {qid: {docid: score, ...}, ...}
     """
     with open(fn, "r", encoding="utf-8") as f:
-        runs = load_runs(file_contents=f, topk=topk)
+        runs = load_runs_from_file_contents(file_contents=f, topk=topk)
     return runs
 
 
